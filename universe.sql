@@ -49,12 +49,35 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.description (
     name character varying(30) NOT NULL,
-    code character varying(6),
-    description text
+    code character varying(6) NOT NULL,
+    description text,
+    description_id integer NOT NULL
 );
 
 
 ALTER TABLE public.description OWNER TO freecodecamp;
+
+--
+-- Name: description_description_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
+--
+
+CREATE SEQUENCE public.description_description_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.description_description_id_seq OWNER TO freecodecamp;
+
+--
+-- Name: description_description_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
+--
+
+ALTER SEQUENCE public.description_description_id_seq OWNED BY public.description.description_id;
+
 
 --
 -- Name: galaxy; Type: TABLE; Schema: public; Owner: freecodecamp
@@ -103,7 +126,8 @@ CREATE TABLE public.moon (
     moon_id integer NOT NULL,
     name character varying(30) NOT NULL,
     diameter integer NOT NULL,
-    planet_id integer
+    planet_id integer,
+    age integer
 );
 
 
@@ -206,6 +230,13 @@ ALTER SEQUENCE public.star_star_id_seq OWNED BY public.star.star_id;
 
 
 --
+-- Name: description description_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.description ALTER COLUMN description_id SET DEFAULT nextval('public.description_description_id_seq'::regclass);
+
+
+--
 -- Name: galaxy galaxy_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
 --
 
@@ -237,10 +268,10 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 -- Data for Name: description; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.description VALUES ('galaxy', NULL, NULL);
-INSERT INTO public.description VALUES ('star', NULL, NULL);
-INSERT INTO public.description VALUES ('planet', NULL, NULL);
-INSERT INTO public.description VALUES ('moon', NULL, NULL);
+INSERT INTO public.description VALUES ('galaxy', 'GL', NULL, 1);
+INSERT INTO public.description VALUES ('planet', 'PL', NULL, 2);
+INSERT INTO public.description VALUES ('moon', 'MN', NULL, 3);
+INSERT INTO public.description VALUES ('star', 'STR', NULL, 4);
 
 
 --
@@ -259,26 +290,26 @@ INSERT INTO public.galaxy VALUES (6, 'Black Eye', 300, 1.8, NULL, true, false);
 -- Data for Name: moon; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.moon VALUES (1, 'Moon', 3000, 3);
-INSERT INTO public.moon VALUES (2, 'Titan', 5000, 6);
-INSERT INTO public.moon VALUES (3, 'Ganymede', 5000, 5);
-INSERT INTO public.moon VALUES (4, 'Callisto', 0, 5);
-INSERT INTO public.moon VALUES (5, 'Io', 4000, 5);
-INSERT INTO public.moon VALUES (6, 'Europa', 3000, 5);
-INSERT INTO public.moon VALUES (7, 'Triton', 2700, 8);
-INSERT INTO public.moon VALUES (8, 'Charon', 1200, 9);
-INSERT INTO public.moon VALUES (9, 'Rhea', 1500, 6);
-INSERT INTO public.moon VALUES (10, 'Oberon', 1500, 7);
-INSERT INTO public.moon VALUES (11, 'Dione', 1100, 6);
-INSERT INTO public.moon VALUES (12, 'Tethys', 1000, 6);
-INSERT INTO public.moon VALUES (13, 'Enceladus', 500, 6);
-INSERT INTO public.moon VALUES (14, 'Mimas', 400, 6);
-INSERT INTO public.moon VALUES (15, 'Hyperion', 250, 6);
-INSERT INTO public.moon VALUES (16, 'Umbriel', 1100, 7);
-INSERT INTO public.moon VALUES (17, 'Ariel', 1100, 7);
-INSERT INTO public.moon VALUES (18, 'Miranda', 470, 7);
-INSERT INTO public.moon VALUES (19, 'Phobos', 27, 4);
-INSERT INTO public.moon VALUES (20, 'Deimos', 15, 4);
+INSERT INTO public.moon VALUES (1, 'Moon', 3000, 3, NULL);
+INSERT INTO public.moon VALUES (2, 'Titan', 5000, 6, NULL);
+INSERT INTO public.moon VALUES (3, 'Ganymede', 5000, 5, NULL);
+INSERT INTO public.moon VALUES (4, 'Callisto', 0, 5, NULL);
+INSERT INTO public.moon VALUES (5, 'Io', 4000, 5, NULL);
+INSERT INTO public.moon VALUES (6, 'Europa', 3000, 5, NULL);
+INSERT INTO public.moon VALUES (7, 'Triton', 2700, 8, NULL);
+INSERT INTO public.moon VALUES (8, 'Charon', 1200, 9, NULL);
+INSERT INTO public.moon VALUES (9, 'Rhea', 1500, 6, NULL);
+INSERT INTO public.moon VALUES (10, 'Oberon', 1500, 7, NULL);
+INSERT INTO public.moon VALUES (11, 'Dione', 1100, 6, NULL);
+INSERT INTO public.moon VALUES (12, 'Tethys', 1000, 6, NULL);
+INSERT INTO public.moon VALUES (13, 'Enceladus', 500, 6, NULL);
+INSERT INTO public.moon VALUES (14, 'Mimas', 400, 6, NULL);
+INSERT INTO public.moon VALUES (15, 'Hyperion', 250, 6, NULL);
+INSERT INTO public.moon VALUES (16, 'Umbriel', 1100, 7, NULL);
+INSERT INTO public.moon VALUES (17, 'Ariel', 1100, 7, NULL);
+INSERT INTO public.moon VALUES (18, 'Miranda', 470, 7, NULL);
+INSERT INTO public.moon VALUES (19, 'Phobos', 27, 4, NULL);
+INSERT INTO public.moon VALUES (20, 'Deimos', 15, 4, NULL);
 
 
 --
@@ -310,6 +341,13 @@ INSERT INTO public.star VALUES (5, 'Antares', 70, NULL, 3);
 INSERT INTO public.star VALUES (6, 'Rigel', 10, NULL, 4);
 INSERT INTO public.star VALUES (7, 'Polaris', 600, NULL, 2);
 INSERT INTO public.star VALUES (8, 'Sun', 20, NULL, 2);
+
+
+--
+-- Name: description_description_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
+--
+
+SELECT pg_catalog.setval('public.description_description_id_seq', 4, true);
 
 
 --
@@ -354,6 +392,14 @@ ALTER TABLE ONLY public.description
 
 ALTER TABLE ONLY public.description
     ADD CONSTRAINT description_name_key UNIQUE (name);
+
+
+--
+-- Name: description description_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.description
+    ADD CONSTRAINT description_pkey PRIMARY KEY (description_id);
 
 
 --
@@ -447,4 +493,3 @@ ALTER TABLE ONLY public.planet
 --
 -- PostgreSQL database dump complete
 --
-
